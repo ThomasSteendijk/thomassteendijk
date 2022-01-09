@@ -5,7 +5,7 @@ draft: False
 ---
 ![Example image](/thomassteendijk/image/Pastedimage20220104160652.png)
 
-
+{{.TableOfContents}}
 
 # Intro
 Intune can give a command to the client to collect log files and upload these to cloud
