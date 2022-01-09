@@ -12,18 +12,18 @@ These log files can then be downloaded from endpoint.microsoft.com and locally e
 # Collecting log files
 In endpoint manager go to devices > all devices > find your device > collect diagnostics > "Yes"
 
-![Pasted image 20220104155258.png] (C:\hugo\quickstart\static\image\Pasted image 20220104160652.png)
+![Pasted image 20220104155258.png] (/image/Pasted image 20220104155258.png)
 
 # Downloading the logs
 after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)
 
-![[Pasted image 20220104155558.png]]
+![Pasted image 20220104155558.png] (/image/Pasted image 20220104155558.png)
 
-![[Pasted image 20220104155919.png]]
+![Pasted image 20220104155919.png] (/image/Pasted image 20220104155919.png)
 
 # Using the log
 By default the log comes in a zip and is hard to read
-![[Pasted image 20220104160019.png]]
+![Pasted image 20220104160019.png] (/image/Pasted image 20220104160019.png)
 
 For this is the script below to transform it into something usefull
 
@@ -159,12 +159,12 @@ Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace("`"","")
 ```
 
 Now you can copy (shift + right click > copy as path) the file path:
-![[Pasted image 20220104160652.png]]
+![Pasted image 20220104160652.png] (/image/Pasted image 20220104160652.png)
 
 and run the script with powershell
-![[Pasted image 20220104160750.png]]
+![Pasted image 20220104160750.png] (/image/Pasted image 20220104160750.png)
 
-![[Pasted image 20220104160856.png]]
+![Pasted image 20220104160856.png] (/image/Pasted image 20220104160856.png)
 
 Or my personal favorite: 
 ```Powershell
@@ -172,7 +172,7 @@ Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace("`"","") -ExportLoca
 ```
 
 with this I can just copy as path, run the script and all my logs are collected in one location for future reference or easy to clean up.
-![[Pasted image 20220104161101.png]]
+![Pasted image 20220104161101.png] (/image/Pasted image 20220104161101.png)
 
 ```Powershell
 function Expand-IntuneLogFile
