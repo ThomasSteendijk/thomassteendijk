@@ -5,6 +5,10 @@ draft: False
 ---
 ![Example image](/image/Pastedimage20220104160652.png)
 ![Example image](/image/Pastedimage20220104160652.png)
+![Example image](static\image\Pastedimage20220104160652.png)
+![Example image](static/image/Pastedimage20220104160652.png)
+
+static\image\Pastedimage20220104160652.png
 
 # Intro
 Intune can give a command to the client to collect log files and upload these to cloud
