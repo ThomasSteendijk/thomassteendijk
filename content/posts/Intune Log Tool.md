@@ -3,7 +3,7 @@ title: "Intune Log Tool"
 date: 2022-01-08T20:44:59+01:00
 draft: False
 ---
-![Example image] (image/Pastedimage20220104160652.png)
+![Example image] (static/image/Pastedimage20220104160652.png)
 
 # Intro
 Intune can give a command to the client to collect log files and upload these to cloud
