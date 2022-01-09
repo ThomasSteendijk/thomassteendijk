@@ -6,7 +6,6 @@
 <meta name=viewport content="width=device-width,minimum-scale=1">
 <meta name=description content="Intro Intune can give a command to the client to collect log files and upload these to cloud These log files can then be downloaded from endpoint.microsoft.com and locally examined.
 Collecting log files In endpoint manager go to devices > all devices > find your device > collect diagnostics > &ldquo;Yes&rdquo;
-![Pasted image 20220104155258.png](/thomassteendijk/image/Pasted image 20220104155258.png)
 Downloading the logs after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)">
 <meta name=generator content="Hugo 0.91.2">
 <meta name=ROBOTS content="NOINDEX, NOFOLLOW">
@@ -14,7 +13,6 @@ Downloading the logs after the logs are uploaded they wil be come available for 
 <meta property="og:title" content="Intune Log Tool">
 <meta property="og:description" content="Intro Intune can give a command to the client to collect log files and upload these to cloud These log files can then be downloaded from endpoint.microsoft.com and locally examined.
 Collecting log files In endpoint manager go to devices > all devices > find your device > collect diagnostics > &ldquo;Yes&rdquo;
-![Pasted image 20220104155258.png](/thomassteendijk/image/Pasted image 20220104155258.png)
 Downloading the logs after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://thomassteendijk.github.io/thomassteendijk/posts/intune-log-tool/"><meta property="article:section" content="posts">
@@ -23,15 +21,13 @@ Downloading the logs after the logs are uploaded they wil be come available for 
 <meta itemprop=name content="Intune Log Tool">
 <meta itemprop=description content="Intro Intune can give a command to the client to collect log files and upload these to cloud These log files can then be downloaded from endpoint.microsoft.com and locally examined.
 Collecting log files In endpoint manager go to devices > all devices > find your device > collect diagnostics > &ldquo;Yes&rdquo;
-![Pasted image 20220104155258.png](/thomassteendijk/image/Pasted image 20220104155258.png)
 Downloading the logs after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)"><meta itemprop=datePublished content="2022-01-08T20:44:59+01:00">
 <meta itemprop=dateModified content="2022-01-08T20:44:59+01:00">
-<meta itemprop=wordCount content="930">
+<meta itemprop=wordCount content="900">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Intune Log Tool">
 <meta name=twitter:description content="Intro Intune can give a command to the client to collect log files and upload these to cloud These log files can then be downloaded from endpoint.microsoft.com and locally examined.
 Collecting log files In endpoint manager go to devices > all devices > find your device > collect diagnostics > &ldquo;Yes&rdquo;
-![Pasted image 20220104155258.png](/thomassteendijk/image/Pasted image 20220104155258.png)
 Downloading the logs after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)">
 </head>
 <body class="ma0 avenir bg-near-white">
@@ -61,21 +57,19 @@ POSTS
 <h1 class="f1 athelas mt3 mb1">Intune Log Tool</h1>
 <time class="f6 mv4 dib tracked" datetime=2022-01-08T20:44:59+01:00>January 8, 2022</time>
 </header>
-<div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p><img src=/thomassteendijk/image/Pastedimage20220104160652.png alt="Example image">
-<img src=/thomassteendijk/image/Pasted%20image%2020220104155558.png alt="Pasted image 20220104155558.png"></p>
+<div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p><img src=/thomassteendijk/image/Pastedimage20220104160652.png alt="Example image"></p>
 <h1 id=intro>Intro</h1>
 <p>Intune can give a command to the client to collect log files and upload these to cloud
 These log files can then be downloaded from endpoint.microsoft.com and locally examined.</p>
 <h1 id=collecting-log-files>Collecting log files</h1>
 <p>In endpoint manager go to devices > all devices > find your device > collect diagnostics > &ldquo;Yes&rdquo;</p>
-<p>![Pasted image 20220104155258.png](/thomassteendijk/image/Pasted image 20220104155258.png)</p>
+<p><img src=/thomassteendijk/image/Pasted_image_20220104155258.png alt="Pasted image 20220104155258.png"></p>
 <h1 id=downloading-the-logs>Downloading the logs</h1>
 <p>after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)</p>
-<p><img src=/thomassteendijk/image/Pasted%20image%2020220104155558.png alt="Pasted image 20220104155558.png"></p>
-<p><img src=/thomassteendijk/image/Pasted%20image%2020220104155919.png alt="Pasted image 20220104155919.png"></p>
+<p><img src=/thomassteendijk/image/Pasted_image_20220104155558.png alt="Pasted image 20220104155558.png"></p>
 <h1 id=using-the-log>Using the log</h1>
 <p>By default the log comes in a zip and is hard to read
-![Pasted image 20220104160019.png](/thomassteendijk/image/Pasted image 20220104160019.png)</p>
+<img src=/thomassteendijk/image/Pasted_image_20220104160019.png alt="Pasted image 20220104160019.png"></p>
 <p>For this is the script below to transform it into something usefull</p>
 <h2 id=expand-intunelogfileps1>Expand-IntuneLogFile.ps1</h2>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>
@@ -191,14 +185,14 @@ These log files can then be downloaded from endpoint.microsoft.com and locally e
 <p>You can also add the following as the last line in the script to use the &ldquo;Run with powershell&rdquo; option.</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>&#34;</span>,<span style=color:#e6db74>&#34;&#34;</span>)
 </code></pre></div><p>Now you can copy (shift + right click > copy as path) the file path:
-![Pasted image 20220104160652.png](/thomassteendijk/image/Pasted image 20220104160652.png)</p>
+<img src=/thomassteendijk/image/Pasted_image_20220104160652.png alt="Pasted image 20220104160652.png"></p>
 <p>and run the script with powershell
-![Pasted image 20220104160750.png](/thomassteendijk/image/Pasted image 20220104160750.png)</p>
-<p>![Pasted image 20220104160856.png](/thomassteendijk/image/Pasted image 20220104160856.png)</p>
+<img src=/thomassteendijk/image/Pasted_image_20220104160750.png alt="Pasted image 20220104160750.png"></p>
+<p><img src=/thomassteendijk/image/Pasted_image_20220104160856.png alt="Pasted image 20220104160856.png"></p>
 <p>Or my personal favorite:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>&#34;</span>,<span style=color:#e6db74>&#34;&#34;</span>) -ExportLocation <span style=color:#e6db74>&#34;C:\IntuneLogStorage&#34;</span>
 </code></pre></div><p>with this I can just copy as path, run the script and all my logs are collected in one location for future reference or easy to clean up.
-![Pasted image 20220104161101.png](/thomassteendijk/image/Pasted image 20220104161101.png)</p>
+<img src=/thomassteendijk/image/Pasted_image_20220104161101.png alt="Pasted image 20220104161101.png"></p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=color:#66d9ef>function</span> Expand-IntuneLogFile
 {
     [<span style=color:#66d9ef>CmdletBinding</span>()]
