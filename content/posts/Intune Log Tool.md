@@ -17,6 +17,7 @@ In endpoint manager go to devices > all devices > find your device > collect dia
 
 ![Pasted image 20220104155258.png](/thomassteendijk/image/Pasted_image_20220104155258.png)
 
+
 # Downloading the logs
 after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)
 
