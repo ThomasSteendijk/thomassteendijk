@@ -2,7 +2,7 @@ baseURL = 'https://thomassteendijk.github.io/thomassteendijk/'
 languageCode = 'en-us'
 title = 'Thomas Steendijk Home'
 subtitle = "test"
-theme = "ananke" 
+theme = "hugo-theme-learn" 
 
 [params]
   text_color = ""
