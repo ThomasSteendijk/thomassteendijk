@@ -1,292 +1,194 @@
-<!doctype html><html lang=en-us>
-<head>
-<meta charset=utf-8>
-<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
-<title>Intune Log Tool | Thomas Steendijk Home</title>
-<meta name=viewport content="width=device-width,minimum-scale=1">
-<meta name=description content="Info about the logtool">
-<meta name=generator content="Hugo 0.91.2">
-<meta name=ROBOTS content="NOINDEX, NOFOLLOW">
-<link rel=stylesheet href=/thomassteendijk/ananke/css/main.min.css>
-<meta property="og:title" content="Intune Log Tool">
-<meta property="og:description" content="Info about the logtool">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://thomassteendijk.github.io/thomassteendijk/posts/intune-log-tool/"><meta property="article:section" content="posts">
-<meta property="article:published_time" content="2022-01-08T20:44:59+01:00">
-<meta property="article:modified_time" content="2022-01-08T20:44:59+01:00">
-<meta itemprop=name content="Intune Log Tool">
-<meta itemprop=description content="Info about the logtool"><meta itemprop=datePublished content="2022-01-08T20:44:59+01:00">
-<meta itemprop=dateModified content="2022-01-08T20:44:59+01:00">
-<meta itemprop=wordCount content="901">
-<meta itemprop=keywords content><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Intune Log Tool">
-<meta name=twitter:description content="Info about the logtool">
-</head>
-<body class="ma0 avenir bg-near-white">
-<header>
-<div class=blue>
-<nav class="pv3 ph3 ph4-ns" role=navigation>
-<div class="flex-l justify-between items-center center">
-<a href=/thomassteendijk/ class="f3 fw2 hover-white no-underline white-90 dib">
-Thomas Steendijk Home
-</a>
-<div class="flex-l items-center">
-<div class=ananke-socials>
-</div>
-</div>
-</div>
-</nav>
-</div>
-</header>
-<main class=pb7 role=main>
-<article class="flex-l flex-wrap justify-between mw8 center ph3">
-<header class="mt4 w-100">
-<aside class="instapaper_ignoref b helvetica tracked">
-POSTS
-</aside>
-<div id=sharing class="mt3 ananke-socials">
-</div>
-<h1 class="f1 athelas mt3 mb1">Intune Log Tool</h1>
-<time class="f6 mv4 dib tracked" datetime=2022-01-08T20:44:59+01:00>January 8, 2022</time>
-</header>
-<div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p><img src=/thomassteendijk/image/Pastedimage20220104160652.png alt="Example image"></p>
-<p>{{.TableOfContents}}</p>
-<h1 id=intro>Intro</h1>
-<p>Intune can give a command to the client to collect log files and upload these to cloud
-These log files can then be downloaded from endpoint.microsoft.com and locally examined.</p>
-<h1 id=collecting-log-files>Collecting log files</h1>
-<p>In endpoint manager go to devices > all devices > find your device > collect diagnostics > &ldquo;Yes&rdquo;</p>
-<p><img src=/thomassteendijk/image/Pasted_image_20220104155258.png alt="Pasted image 20220104155258.png"></p>
-<h1 id=downloading-the-logs>Downloading the logs</h1>
-<p>after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)</p>
-<p><img src=/thomassteendijk/image/Pasted_image_20220104155558.png alt="Pasted image 20220104155558.png"></p>
-<h1 id=using-the-log>Using the log</h1>
-<p>By default the log comes in a zip and is hard to read
-<img src=/thomassteendijk/image/Pasted_image_20220104160019.png alt="Pasted image 20220104160019.png"></p>
-<p>For this is the script below to transform it into something usefull</p>
-<h2 id=expand-intunelogfileps1>Expand-IntuneLogFile.ps1</h2>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>
-<span style=color:#75715e>&lt;#
-</span><span style=color:#75715e></span><span style=color:#e6db74>.Synopsis</span><span style=color:#75715e>
-</span><span style=color:#75715e>   Expands intunes logs to a better readable format
-</span><span style=color:#75715e></span><span style=color:#e6db74>.DESCRIPTION</span><span style=color:#75715e>
-</span><span style=color:#75715e>   Takes the intune log file, unarchive it, read the result.xml and reforms the folder structure.
-</span><span style=color:#75715e></span><span style=color:#e6db74>.EXAMPLE</span><span style=color:#75715e>
-</span><span style=color:#75715e>    Create a expanded log in the same folder as the source file
-</span><span style=color:#75715e>   Expand-IntuneLogFile -IntuneLogFile &#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34;
-</span><span style=color:#75715e></span><span style=color:#e6db74>.EXAMPLE</span><span style=color:#75715e>
-</span><span style=color:#75715e>    Create a expanded log in the ExportLocation folder
-</span><span style=color:#75715e>   Expand-IntuneLogFile -IntuneLogFile &#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34; -ExportLocation C:\temp
-</span><span style=color:#75715e></span><span style=color:#e6db74>.EXAMPLE</span><span style=color:#75715e>
-</span><span style=color:#75715e>    Create a expanded log in the same folder as the source file by copying the path of a log file and running the powershell script.
-</span><span style=color:#75715e>    As the cmdbelow at the end of the script 
-</span><span style=color:#75715e>    allows the following work flow: 
-</span><span style=color:#75715e>    DiagLogs-LAP023985-20220103T192232Z.zip &gt; right click &gt; copy as path
-</span><span style=color:#75715e>    Expand-IntuneLogFile.ps1 &gt; run with powershell
-</span><span style=color:#75715e>   
-</span><span style=color:#75715e>   Command for the end of the script:
-</span><span style=color:#75715e>   Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(&#34;`&#34;&#34;,&#34;&#34;)
-</span><span style=color:#75715e>
-</span><span style=color:#75715e>#&gt;</span>
-<span style=color:#66d9ef>function</span> Expand-IntuneLogFile
-{
-    [<span style=color:#66d9ef>CmdletBinding</span>()]
-    [<span style=color:#66d9ef>Alias</span>()]
-    [OutputType(<span style=color:#66d9ef>[int]</span>)]
-    <span style=color:#66d9ef>Param</span>
-    (
-        <span style=color:#75715e># Param1 help description</span>
-        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span>=$true,
-                   <span style=color:#66d9ef>ValueFromPipelineByPropertyName</span>=$true,
-                   <span style=color:#66d9ef>Position</span>=0)]
-        [ValidateScript({<span style=color:#66d9ef>try</span> 
-            {
-                Get-Item $_ -ErrorAction Stop
-            } <span style=color:#66d9ef>catch</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> {
-                <span style=color:#66d9ef>Throw</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> <span style=color:#e6db74>&#34;${_} Check the path in </span><span style=color:#ae81ff>`$</span><span style=color:#e6db74>IntuneLogFile&#34;</span>
-            }})]
-        <span style=color:#66d9ef>[string]</span>
-        $IntuneLogFile,
-
-        <span style=color:#75715e># Param2 help description</span>
-        $ExportLocation = (get-item $IntuneLogFile).Directory.FullName
-    )
-
-    <span style=color:#66d9ef>Begin</span>
-    {
-        <span style=color:#75715e>#region Formatting Choices </span>
-        $flatFileNameTemplate = <span style=color:#e6db74>&#39;({0:D2}) {1} {2}&#39;</span> 
-        $maxLengthForInputTextPassedToOutput = 80 
-        <span style=color:#75715e>#endregion </span>
-    }
-    <span style=color:#66d9ef>Process</span>
-    {
-        <span style=color:#75715e>#step 1: expand archive to $loglocation</span>
-        Unblock-File -Path $IntuneLogFile
-        $diagnosticArchiveTempUnzippedPath = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>_expanded&#34;</span> 
-        <span style=color:#66d9ef>if</span>(<span style=color:#f92672>-not</span>(Test-Path $diagnosticArchiveTempUnzippedPath)){New-Item $diagnosticArchiveTempUnzippedPath -ItemType Directory |Out-Null} 
-        $reformattedArchivePath            = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>&#34;</span> 
-        <span style=color:#66d9ef>if</span>(<span style=color:#f92672>-not</span> (Test-Path $reformattedArchivePath)){New-Item $reformattedArchivePath -ItemType Directory |Out-Null} 
-        Expand-Archive -Path $IntuneLogFile -DestinationPath $diagnosticArchiveTempUnzippedPath
-
-        <span style=color:#75715e>#step 2: format folders</span>
-        $resultElements = (<span style=color:#66d9ef>[xml]</span>(Get-Content -Path (Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath <span style=color:#e6db74>&#34;results.xml&#34;</span>))).Collection.ChildNodes <span style=color:#75715e>#| Foreach-Object{ $_ } </span>
-        $n = 1 
- 
-        <span style=color:#75715e># only process supported directives </span>
-        $supportedDirectives = @(<span style=color:#e6db74>&#39;Command&#39;</span>, <span style=color:#e6db74>&#39;Events&#39;</span>, <span style=color:#e6db74>&#39;FoldersFiles&#39;</span>, <span style=color:#e6db74>&#39;RegistryKey&#39;</span>) 
-        <span style=color:#66d9ef>foreach</span>( $element <span style=color:#66d9ef>in</span> $resultElements) { 
-          <span style=color:#75715e># only process supported directives, skip unsupported ones </span>
-          <span style=color:#66d9ef>if</span>(!$supportedDirectives.Contains($element.Name)) { <span style=color:#66d9ef>continue</span> } 
- 
-          $directiveNumber       = $n 
-          $n++ 
-          $directiveType         = $element.Name 
-          $directiveStatus       = <span style=color:#66d9ef>[int]</span>$element.Attributes.ItemOf(<span style=color:#e6db74>&#39;HRESULT&#39;</span>).psbase.Value 
-          $directiveUserInputRaw = $element.InnerText 
- 
-          <span style=color:#75715e># trim the path to only include the actual command - not the full path </span>
-          <span style=color:#66d9ef>if</span> ($element.Name <span style=color:#f92672>-eq</span> <span style=color:#e6db74>&#39;Command&#39;</span>) { 
-            $lastIndexOfSlash = $directiveUserInputRaw.LastIndexOf(<span style=color:#e6db74>&#39;\&#39;</span>); 
-            $directiveUserInputRaw = $directiveUserInputRaw.substring($lastIndexOfSlash+1); 
-          } 
- 
-          $directiveUserInputFileNameCompatible = $directiveUserInputRaw <span style=color:#f92672>-replace</span> <span style=color:#e6db74>&#39;[\\|/\[\]&lt;&gt;\:&#34;\?\*%\.\s]&#39;</span>,<span style=color:#e6db74>&#39;_&#39;</span> 
-          $directiveUserInputTrimmed            = $directiveUserInputFileNameCompatible.substring(0, <span style=color:#66d9ef>[System.Math]</span>::Min($maxLengthForInputTextPassedToOutput, $directiveUserInputFileNameCompatible.Length)) 
-          $directiveSummaryString               = $flatFileNameTemplate <span style=color:#f92672>-f</span> $directiveNumber,$directiveType,$directiveUserInputTrimmed 
-          $directiveOutputFolder                = Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath $directiveNumber 
-          $directiveOutputFiles                 = Get-ChildItem -Path $directiveOutputFolder <span style=color:#f92672>-File</span> 
-          <span style=color:#66d9ef>foreach</span>( $file <span style=color:#66d9ef>in</span> $directiveOutputFiles) { 
-            $leafSummaryString = $directiveSummaryString,$file.Name -join <span style=color:#e6db74>&#39; &#39;</span> 
-            Copy-Item $file.FullName -Destination (Join-Path -Path $reformattedArchivePath -ChildPath $leafSummaryString) 
-          } 
-        } 
-        <span style=color:#75715e>#endregion  </span>
-        Remove-Item -Path $diagnosticArchiveTempUnzippedPath -Force -Recurse 
-        Get-Item $reformattedArchivePath
-        
-    }
-}
-
-</code></pre></div><p>this script can be used in the following methodes</p>
-<h2 id=with-the-script-loaded>With the script loaded</h2>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>Expand-IntuneLogFile -IntuneLogFile <span style=color:#e6db74>&#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34;</span>
-</code></pre></div><p>this will unpack the DiagLogs.zip to the same folder as the zip itself</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>Expand-IntuneLogFile -IntuneLogFile <span style=color:#e6db74>&#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34;</span> -ExportLocation C:\temp
-</code></pre></div><p>This wil unpack the Dialogs.zip to the selected folder in -ExportLocation (in this example C:\temp) if the folder path does not exist one will be created.</p>
-<h2 id=without-the-script-loaded>Without the script loaded</h2>
-<p>You can also add the following as the last line in the script to use the &ldquo;Run with powershell&rdquo; option.</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>&#34;</span>,<span style=color:#e6db74>&#34;&#34;</span>)
-</code></pre></div><p>Now you can copy (shift + right click > copy as path) the file path:
-<img src=/thomassteendijk/image/Pasted_image_20220104160652.png alt="Pasted image 20220104160652.png"></p>
-<p>and run the script with powershell
-<img src=/thomassteendijk/image/Pasted_image_20220104160750.png alt="Pasted image 20220104160750.png"></p>
-<p><img src=/thomassteendijk/image/Pasted_image_20220104160856.png alt="Pasted image 20220104160856.png"></p>
-<p>Or my personal favorite:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell>Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>&#34;</span>,<span style=color:#e6db74>&#34;&#34;</span>) -ExportLocation <span style=color:#e6db74>&#34;C:\IntuneLogStorage&#34;</span>
-</code></pre></div><p>with this I can just copy as path, run the script and all my logs are collected in one location for future reference or easy to clean up.
-<img src=/thomassteendijk/image/Pasted_image_20220104161101.png alt="Pasted image 20220104161101.png"></p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=color:#66d9ef>function</span> Expand-IntuneLogFile
-{
-    [<span style=color:#66d9ef>CmdletBinding</span>()]
-    [<span style=color:#66d9ef>Alias</span>()]
-    [OutputType(<span style=color:#66d9ef>[int]</span>)]
-    <span style=color:#66d9ef>Param</span>
-    (
-        <span style=color:#75715e># Param1 help description</span>
-        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span>=$true,
-                   <span style=color:#66d9ef>ValueFromPipelineByPropertyName</span>=$true,
-                   <span style=color:#66d9ef>Position</span>=0)]
-        [ValidateScript({<span style=color:#66d9ef>try</span> 
-            {
-                Get-Item $_ -ErrorAction Stop
-            } <span style=color:#66d9ef>catch</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> {
-                <span style=color:#66d9ef>Throw</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> <span style=color:#e6db74>&#34;${_} Check the path in </span><span style=color:#ae81ff>`$</span><span style=color:#e6db74>IntuneLogFile&#34;</span>
-            }})]
-        <span style=color:#66d9ef>[string]</span>
-        $IntuneLogFile,
-
-        <span style=color:#75715e># Param2 help description</span>
-        $ExportLocation = (get-item $IntuneLogFile).Directory.FullName
-    )
-
-    <span style=color:#66d9ef>Begin</span>
-    {
-        <span style=color:#75715e>#region Formatting Choices </span>
-        $flatFileNameTemplate = <span style=color:#e6db74>&#39;{0}\{1}&#39;</span> 
-        $maxLengthForInputTextPassedToOutput = 80 
-        <span style=color:#75715e>#endregion </span>
-    }
-    <span style=color:#66d9ef>Process</span>
-    {
-        <span style=color:#75715e>#step 1: expand archive to $loglocation</span>
-        Unblock-File -Path $IntuneLogFile
-        $diagnosticArchiveTempUnzippedPath = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>_expanded&#34;</span> 
-        <span style=color:#66d9ef>if</span>(<span style=color:#f92672>-not</span>(Test-Path $diagnosticArchiveTempUnzippedPath)){New-Item $diagnosticArchiveTempUnzippedPath -ItemType Directory |Out-Null} 
-        $reformattedArchivePath            = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>&#34;</span> 
-        <span style=color:#75715e>#if(-not (Test-Path $reformattedArchivePath)){New-Item $reformattedArchivePath -ItemType Directory |Out-Null} </span>
-        Expand-Archive -Path $IntuneLogFile -DestinationPath $diagnosticArchiveTempUnzippedPath
-
-        <span style=color:#75715e>#step 2: format folders</span>
-        $resultElements = (<span style=color:#66d9ef>[xml]</span>(Get-Content -Path (Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath <span style=color:#e6db74>&#34;results.xml&#34;</span>))).Collection.ChildNodes <span style=color:#75715e>#| Foreach-Object{ $_ } </span>
-        $n = 1 
- 
-        <span style=color:#75715e># only process supported directives </span>
-        $supportedDirectives = @(<span style=color:#e6db74>&#39;Command&#39;</span>, <span style=color:#e6db74>&#39;Events&#39;</span>, <span style=color:#e6db74>&#39;FoldersFiles&#39;</span>, <span style=color:#e6db74>&#39;RegistryKey&#39;</span>) 
-        <span style=color:#66d9ef>foreach</span>( $element <span style=color:#66d9ef>in</span> $resultElements) { 
-          <span style=color:#75715e># only process supported directives, skip unsupported ones </span>
-          <span style=color:#66d9ef>if</span>(!$supportedDirectives.Contains($element.Name)) { <span style=color:#66d9ef>continue</span> } 
- 
-          $directiveNumber       = $n 
-          $n++ 
-          $directiveType         = $element.Name 
-          $directiveStatus       = <span style=color:#66d9ef>[int]</span>$element.Attributes.ItemOf(<span style=color:#e6db74>&#39;HRESULT&#39;</span>).psbase.Value 
-          $directiveUserInputRaw = $element.InnerText 
- 
-          <span style=color:#75715e># trim the path to only include the actual command - not the full path </span>
-          <span style=color:#66d9ef>if</span> ($element.Name <span style=color:#f92672>-eq</span> <span style=color:#e6db74>&#39;Command&#39;</span>) { 
-            $lastIndexOfSlash      = $directiveUserInputRaw.LastIndexOf(<span style=color:#e6db74>&#39;\&#39;</span>); 
-            $directiveUserInputRaw = $directiveUserInputRaw.substring($lastIndexOfSlash+1); 
-          } 
- 
-          $directiveUserInputFileNameCompatible = $directiveUserInputRaw <span style=color:#f92672>-replace</span> <span style=color:#e6db74>&#39;[\\|/\[\]&lt;&gt;\:&#34;\?\*%\.\s]&#39;</span>,<span style=color:#e6db74>&#39;_&#39;</span> 
-          $directiveUserInputTrimmed            = $directiveUserInputFileNameCompatible.substring(0, <span style=color:#66d9ef>[System.Math]</span>::Min($maxLengthForInputTextPassedToOutput, $directiveUserInputFileNameCompatible.Length)) 
-          $directiveSummaryString               = $flatFileNameTemplate <span style=color:#f92672>-f</span> $directiveType,$directiveUserInputTrimmed 
-          $directiveOutputFolder                = Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath $directiveNumber 
-          $directiveOutputFiles                 = Get-ChildItem -Path $directiveOutputFolder <span style=color:#f92672>-File</span> 
-          <span style=color:#66d9ef>foreach</span>( $file <span style=color:#66d9ef>in</span> $directiveOutputFiles) { 
-            $leafSummaryString = $directiveSummaryString,$file.Name -join <span style=color:#e6db74>&#39; &#39;</span> 
-            $MainFolder = $(Join-Path $reformattedArchivePath $directiveSummaryString).Replace(<span style=color:#e6db74>&#34;-&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;_&#34;</span>,<span style=color:#e6db74>&#34; &#34;</span>).Replace(<span style=color:#e6db74>&#34;\ &#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;   \&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;  \&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34; \&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;   &#34;</span>,<span style=color:#e6db74>&#34; &#34;</span>).Replace(<span style=color:#e6db74>&#34;  &#34;</span>,<span style=color:#e6db74>&#34; &#34;</span>).TrimEnd().Replace(<span style=color:#e6db74>&#34; &#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>)
-            <span style=color:#75715e>#if ($MainFolder[-1] = &#34; &#34;) {$MainFolder = $MainFolder.Substring(0,$MainFolder.Length - 2)}</span>
-            <span style=color:#66d9ef>if</span> (!(Test-Path $MainFolder)) { new-item -ItemType Directory -Path $MainFolder | Out-Null}
-            Copy-Item $file.FullName -Destination (Join-Path -Path $MainFolder -ChildPath $file.Name) 
-          } 
-        } 
-        <span style=color:#75715e>#endregion  </span>
-        Remove-Item -Path $diagnosticArchiveTempUnzippedPath -Force -Recurse 
-        <span style=color:#75715e>#Get-Item $reformattedArchivePath</span>
-        
-    }
-}
-
-</code></pre></div><ul class=pa0>
-</ul>
-<div class="mt6 instapaper_ignoref">
-</div>
-</div>
-<aside class="w-30-l mt6-l">
-</aside>
-</article>
-</main>
-<footer class="blue bottom-0 w-100 pa3" role=contentinfo>
-<div class="flex justify-between">
-<a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href=https://thomassteendijk.github.io/thomassteendijk/>
-&copy; Thomas Steendijk Home 2022
-</a>
-<div>
-<div class=ananke-socials>
-</div></div>
-</div>
-</footer>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Intune Log Tool | Thomas Steendijk Home</title><meta name=viewport content="width=device-width,minimum-scale=1"><meta name=description content="Info about the logtool"><meta name=generator content="Hugo 0.99.1"><meta name=ROBOTS content="NOINDEX, NOFOLLOW"><link rel=stylesheet href=/thomassteendijk/ananke/css/main.min.css><meta property="og:title" content="Intune Log Tool"><meta property="og:description" content="Info about the logtool"><meta property="og:type" content="article"><meta property="og:url" content="https://thomassteendijk.github.io/thomassteendijk/posts/intune-log-tool/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-01-08T20:44:59+01:00"><meta property="article:modified_time" content="2022-01-08T20:44:59+01:00"><meta itemprop=name content="Intune Log Tool"><meta itemprop=description content="Info about the logtool"><meta itemprop=datePublished content="2022-01-08T20:44:59+01:00"><meta itemprop=dateModified content="2022-01-08T20:44:59+01:00"><meta itemprop=wordCount content="901"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content="Intune Log Tool"><meta name=twitter:description content="Info about the logtool"></head><body class="ma0 avenir bg-near-white"><header><div class=blue><nav class="pv3 ph3 ph4-ns" role=navigation><div class="flex-l justify-between items-center center"><a href=/thomassteendijk/ class="f3 fw2 hover-white no-underline white-90 dib">Thomas Steendijk Home</a><div class="flex-l items-center"><div class=ananke-socials></div></div></div></nav></div></header><main class=pb7 role=main><article class="flex-l flex-wrap justify-between mw8 center ph3"><header class="mt4 w-100"><aside class="instapaper_ignoref b helvetica tracked">POSTS</aside><div id=sharing class="mt3 ananke-socials"></div><h1 class="f1 athelas mt3 mb1">Intune Log Tool</h1><time class="f6 mv4 dib tracked" datetime=2022-01-08T20:44:59+01:00>January 8, 2022</time></header><div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p><img src=/thomassteendijk/image/Pastedimage20220104160652.png alt="Example image"></p><p>{{.TableOfContents}}</p><h1 id=intro>Intro</h1><p>Intune can give a command to the client to collect log files and upload these to cloud
+These log files can then be downloaded from endpoint.microsoft.com and locally examined.</p><h1 id=collecting-log-files>Collecting log files</h1><p>In endpoint manager go to devices > all devices > find your device > collect diagnostics > &ldquo;Yes&rdquo;</p><p><img src=/thomassteendijk/image/Pasted_image_20220104155258.png alt="Pasted image 20220104155258.png"></p><h1 id=downloading-the-logs>Downloading the logs</h1><p>after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)</p><p><img src=/thomassteendijk/image/Pasted_image_20220104155558.png alt="Pasted image 20220104155558.png"></p><h1 id=using-the-log>Using the log</h1><p>By default the log comes in a zip and is hard to read
+<img src=/thomassteendijk/image/Pasted_image_20220104160019.png alt="Pasted image 20220104160019.png"></p><p>For this is the script below to transform it into something usefull</p><h2 id=expand-intunelogfileps1>Expand-IntuneLogFile.ps1</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>&lt;#
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#e6db74>.Synopsis</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>   Expands intunes logs to a better readable format
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#e6db74>.DESCRIPTION</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>   Takes the intune log file, unarchive it, read the result.xml and reforms the folder structure.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#e6db74>.EXAMPLE</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    Create a expanded log in the same folder as the source file
+</span></span></span><span style=display:flex><span><span style=color:#75715e>   Expand-IntuneLogFile -IntuneLogFile &#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34;
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#e6db74>.EXAMPLE</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    Create a expanded log in the ExportLocation folder
+</span></span></span><span style=display:flex><span><span style=color:#75715e>   Expand-IntuneLogFile -IntuneLogFile &#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34; -ExportLocation C:\temp
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#e6db74>.EXAMPLE</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    Create a expanded log in the same folder as the source file by copying the path of a log file and running the powershell script.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    As the cmdbelow at the end of the script 
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    allows the following work flow: 
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    DiagLogs-LAP023985-20220103T192232Z.zip &gt; right click &gt; copy as path
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    Expand-IntuneLogFile.ps1 &gt; run with powershell
+</span></span></span><span style=display:flex><span><span style=color:#75715e>   
+</span></span></span><span style=display:flex><span><span style=color:#75715e>   Command for the end of the script:
+</span></span></span><span style=display:flex><span><span style=color:#75715e>   Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(&#34;`&#34;&#34;,&#34;&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>function</span> Expand-IntuneLogFile
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    [<span style=color:#66d9ef>CmdletBinding</span>()]
+</span></span><span style=display:flex><span>    [<span style=color:#66d9ef>Alias</span>()]
+</span></span><span style=display:flex><span>    [OutputType(<span style=color:#66d9ef>[int]</span>)]
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>Param</span>
+</span></span><span style=display:flex><span>    (
+</span></span><span style=display:flex><span>        <span style=color:#75715e># Param1 help description</span>
+</span></span><span style=display:flex><span>        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span>=$true,
+</span></span><span style=display:flex><span>                   <span style=color:#66d9ef>ValueFromPipelineByPropertyName</span>=$true,
+</span></span><span style=display:flex><span>                   <span style=color:#66d9ef>Position</span>=0)]
+</span></span><span style=display:flex><span>        [ValidateScript({<span style=color:#66d9ef>try</span> 
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                Get-Item $_ -ErrorAction Stop
+</span></span><span style=display:flex><span>            } <span style=color:#66d9ef>catch</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> {
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>Throw</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> <span style=color:#e6db74>&#34;${_} Check the path in </span><span style=color:#ae81ff>`$</span><span style=color:#e6db74>IntuneLogFile&#34;</span>
+</span></span><span style=display:flex><span>            }})]
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>[string]</span>
+</span></span><span style=display:flex><span>        $IntuneLogFile,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># Param2 help description</span>
+</span></span><span style=display:flex><span>        $ExportLocation = (get-item $IntuneLogFile).Directory.FullName
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>Begin</span>
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#region Formatting Choices </span>
+</span></span><span style=display:flex><span>        $flatFileNameTemplate = <span style=color:#e6db74>&#39;({0:D2}) {1} {2}&#39;</span> 
+</span></span><span style=display:flex><span>        $maxLengthForInputTextPassedToOutput = 80 
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#endregion </span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>Process</span>
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#step 1: expand archive to $loglocation</span>
+</span></span><span style=display:flex><span>        Unblock-File -Path $IntuneLogFile
+</span></span><span style=display:flex><span>        $diagnosticArchiveTempUnzippedPath = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>_expanded&#34;</span> 
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(<span style=color:#f92672>-not</span>(Test-Path $diagnosticArchiveTempUnzippedPath)){New-Item $diagnosticArchiveTempUnzippedPath -ItemType Directory |Out-Null} 
+</span></span><span style=display:flex><span>        $reformattedArchivePath            = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>&#34;</span> 
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(<span style=color:#f92672>-not</span> (Test-Path $reformattedArchivePath)){New-Item $reformattedArchivePath -ItemType Directory |Out-Null} 
+</span></span><span style=display:flex><span>        Expand-Archive -Path $IntuneLogFile -DestinationPath $diagnosticArchiveTempUnzippedPath
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#step 2: format folders</span>
+</span></span><span style=display:flex><span>        $resultElements = (<span style=color:#66d9ef>[xml]</span>(Get-Content -Path (Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath <span style=color:#e6db74>&#34;results.xml&#34;</span>))).Collection.ChildNodes <span style=color:#75715e>#| Foreach-Object{ $_ } </span>
+</span></span><span style=display:flex><span>        $n = 1 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>        <span style=color:#75715e># only process supported directives </span>
+</span></span><span style=display:flex><span>        $supportedDirectives = @(<span style=color:#e6db74>&#39;Command&#39;</span>, <span style=color:#e6db74>&#39;Events&#39;</span>, <span style=color:#e6db74>&#39;FoldersFiles&#39;</span>, <span style=color:#e6db74>&#39;RegistryKey&#39;</span>) 
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>foreach</span>( $element <span style=color:#66d9ef>in</span> $resultElements) { 
+</span></span><span style=display:flex><span>          <span style=color:#75715e># only process supported directives, skip unsupported ones </span>
+</span></span><span style=display:flex><span>          <span style=color:#66d9ef>if</span>(!$supportedDirectives.Contains($element.Name)) { <span style=color:#66d9ef>continue</span> } 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>          $directiveNumber       = $n 
+</span></span><span style=display:flex><span>          $n++ 
+</span></span><span style=display:flex><span>          $directiveType         = $element.Name 
+</span></span><span style=display:flex><span>          $directiveStatus       = <span style=color:#66d9ef>[int]</span>$element.Attributes.ItemOf(<span style=color:#e6db74>&#39;HRESULT&#39;</span>).psbase.Value 
+</span></span><span style=display:flex><span>          $directiveUserInputRaw = $element.InnerText 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>          <span style=color:#75715e># trim the path to only include the actual command - not the full path </span>
+</span></span><span style=display:flex><span>          <span style=color:#66d9ef>if</span> ($element.Name <span style=color:#f92672>-eq</span> <span style=color:#e6db74>&#39;Command&#39;</span>) { 
+</span></span><span style=display:flex><span>            $lastIndexOfSlash = $directiveUserInputRaw.LastIndexOf(<span style=color:#e6db74>&#39;\&#39;</span>); 
+</span></span><span style=display:flex><span>            $directiveUserInputRaw = $directiveUserInputRaw.substring($lastIndexOfSlash+1); 
+</span></span><span style=display:flex><span>          } 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>          $directiveUserInputFileNameCompatible = $directiveUserInputRaw <span style=color:#f92672>-replace</span> <span style=color:#e6db74>&#39;[\\|/\[\]&lt;&gt;\:&#34;\?\*%\.\s]&#39;</span>,<span style=color:#e6db74>&#39;_&#39;</span> 
+</span></span><span style=display:flex><span>          $directiveUserInputTrimmed            = $directiveUserInputFileNameCompatible.substring(0, <span style=color:#66d9ef>[System.Math]</span>::Min($maxLengthForInputTextPassedToOutput, $directiveUserInputFileNameCompatible.Length)) 
+</span></span><span style=display:flex><span>          $directiveSummaryString               = $flatFileNameTemplate <span style=color:#f92672>-f</span> $directiveNumber,$directiveType,$directiveUserInputTrimmed 
+</span></span><span style=display:flex><span>          $directiveOutputFolder                = Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath $directiveNumber 
+</span></span><span style=display:flex><span>          $directiveOutputFiles                 = Get-ChildItem -Path $directiveOutputFolder <span style=color:#f92672>-File</span> 
+</span></span><span style=display:flex><span>          <span style=color:#66d9ef>foreach</span>( $file <span style=color:#66d9ef>in</span> $directiveOutputFiles) { 
+</span></span><span style=display:flex><span>            $leafSummaryString = $directiveSummaryString,$file.Name -join <span style=color:#e6db74>&#39; &#39;</span> 
+</span></span><span style=display:flex><span>            Copy-Item $file.FullName -Destination (Join-Path -Path $reformattedArchivePath -ChildPath $leafSummaryString) 
+</span></span><span style=display:flex><span>          } 
+</span></span><span style=display:flex><span>        } 
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#endregion  </span>
+</span></span><span style=display:flex><span>        Remove-Item -Path $diagnosticArchiveTempUnzippedPath -Force -Recurse 
+</span></span><span style=display:flex><span>        Get-Item $reformattedArchivePath
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>this script can be used in the following methodes</p><h2 id=with-the-script-loaded>With the script loaded</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=display:flex><span>Expand-IntuneLogFile -IntuneLogFile <span style=color:#e6db74>&#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34;</span>
+</span></span></code></pre></div><p>this will unpack the DiagLogs.zip to the same folder as the zip itself</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=display:flex><span>Expand-IntuneLogFile -IntuneLogFile <span style=color:#e6db74>&#34;C:\Users\Thomas\Desktop\DiagLogs-LAP023985-20220103T192232Z.zip&#34;</span> -ExportLocation C:\temp
+</span></span></code></pre></div><p>This wil unpack the Dialogs.zip to the selected folder in -ExportLocation (in this example C:\temp) if the folder path does not exist one will be created.</p><h2 id=without-the-script-loaded>Without the script loaded</h2><p>You can also add the following as the last line in the script to use the &ldquo;Run with powershell&rdquo; option.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=display:flex><span>Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>&#34;</span>,<span style=color:#e6db74>&#34;&#34;</span>)
+</span></span></code></pre></div><p>Now you can copy (shift + right click > copy as path) the file path:
+<img src=/thomassteendijk/image/Pasted_image_20220104160652.png alt="Pasted image 20220104160652.png"></p><p>and run the script with powershell
+<img src=/thomassteendijk/image/Pasted_image_20220104160750.png alt="Pasted image 20220104160750.png"></p><p><img src=/thomassteendijk/image/Pasted_image_20220104160856.png alt="Pasted image 20220104160856.png"></p><p>Or my personal favorite:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=display:flex><span>Expand-IntuneLogFile -IntuneLogFile (Get-Clipboard).Replace(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>`&#34;</span><span style=color:#e6db74>&#34;</span>,<span style=color:#e6db74>&#34;&#34;</span>) -ExportLocation <span style=color:#e6db74>&#34;C:\IntuneLogStorage&#34;</span>
+</span></span></code></pre></div><p>with this I can just copy as path, run the script and all my logs are collected in one location for future reference or easy to clean up.
+<img src=/thomassteendijk/image/Pasted_image_20220104161101.png alt="Pasted image 20220104161101.png"></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Powershell data-lang=Powershell><span style=display:flex><span><span style=color:#66d9ef>function</span> Expand-IntuneLogFile
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    [<span style=color:#66d9ef>CmdletBinding</span>()]
+</span></span><span style=display:flex><span>    [<span style=color:#66d9ef>Alias</span>()]
+</span></span><span style=display:flex><span>    [OutputType(<span style=color:#66d9ef>[int]</span>)]
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>Param</span>
+</span></span><span style=display:flex><span>    (
+</span></span><span style=display:flex><span>        <span style=color:#75715e># Param1 help description</span>
+</span></span><span style=display:flex><span>        [<span style=color:#66d9ef>Parameter</span>(<span style=color:#66d9ef>Mandatory</span>=$true,
+</span></span><span style=display:flex><span>                   <span style=color:#66d9ef>ValueFromPipelineByPropertyName</span>=$true,
+</span></span><span style=display:flex><span>                   <span style=color:#66d9ef>Position</span>=0)]
+</span></span><span style=display:flex><span>        [ValidateScript({<span style=color:#66d9ef>try</span> 
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                Get-Item $_ -ErrorAction Stop
+</span></span><span style=display:flex><span>            } <span style=color:#66d9ef>catch</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> {
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>Throw</span> <span style=color:#66d9ef>[System.Management.Automation.ItemNotFoundException]</span> <span style=color:#e6db74>&#34;${_} Check the path in </span><span style=color:#ae81ff>`$</span><span style=color:#e6db74>IntuneLogFile&#34;</span>
+</span></span><span style=display:flex><span>            }})]
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>[string]</span>
+</span></span><span style=display:flex><span>        $IntuneLogFile,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># Param2 help description</span>
+</span></span><span style=display:flex><span>        $ExportLocation = (get-item $IntuneLogFile).Directory.FullName
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>Begin</span>
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#region Formatting Choices </span>
+</span></span><span style=display:flex><span>        $flatFileNameTemplate = <span style=color:#e6db74>&#39;{0}\{1}&#39;</span> 
+</span></span><span style=display:flex><span>        $maxLengthForInputTextPassedToOutput = 80 
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#endregion </span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>Process</span>
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#step 1: expand archive to $loglocation</span>
+</span></span><span style=display:flex><span>        Unblock-File -Path $IntuneLogFile
+</span></span><span style=display:flex><span>        $diagnosticArchiveTempUnzippedPath = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>_expanded&#34;</span> 
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(<span style=color:#f92672>-not</span>(Test-Path $diagnosticArchiveTempUnzippedPath)){New-Item $diagnosticArchiveTempUnzippedPath -ItemType Directory |Out-Null} 
+</span></span><span style=display:flex><span>        $reformattedArchivePath            = Join-Path $ExportLocation <span style=color:#e6db74>&#34;</span>$((Get-Item -Path $IntuneLogFile).BaseName)<span style=color:#e6db74>&#34;</span> 
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#if(-not (Test-Path $reformattedArchivePath)){New-Item $reformattedArchivePath -ItemType Directory |Out-Null} </span>
+</span></span><span style=display:flex><span>        Expand-Archive -Path $IntuneLogFile -DestinationPath $diagnosticArchiveTempUnzippedPath
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#step 2: format folders</span>
+</span></span><span style=display:flex><span>        $resultElements = (<span style=color:#66d9ef>[xml]</span>(Get-Content -Path (Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath <span style=color:#e6db74>&#34;results.xml&#34;</span>))).Collection.ChildNodes <span style=color:#75715e>#| Foreach-Object{ $_ } </span>
+</span></span><span style=display:flex><span>        $n = 1 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>        <span style=color:#75715e># only process supported directives </span>
+</span></span><span style=display:flex><span>        $supportedDirectives = @(<span style=color:#e6db74>&#39;Command&#39;</span>, <span style=color:#e6db74>&#39;Events&#39;</span>, <span style=color:#e6db74>&#39;FoldersFiles&#39;</span>, <span style=color:#e6db74>&#39;RegistryKey&#39;</span>) 
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>foreach</span>( $element <span style=color:#66d9ef>in</span> $resultElements) { 
+</span></span><span style=display:flex><span>          <span style=color:#75715e># only process supported directives, skip unsupported ones </span>
+</span></span><span style=display:flex><span>          <span style=color:#66d9ef>if</span>(!$supportedDirectives.Contains($element.Name)) { <span style=color:#66d9ef>continue</span> } 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>          $directiveNumber       = $n 
+</span></span><span style=display:flex><span>          $n++ 
+</span></span><span style=display:flex><span>          $directiveType         = $element.Name 
+</span></span><span style=display:flex><span>          $directiveStatus       = <span style=color:#66d9ef>[int]</span>$element.Attributes.ItemOf(<span style=color:#e6db74>&#39;HRESULT&#39;</span>).psbase.Value 
+</span></span><span style=display:flex><span>          $directiveUserInputRaw = $element.InnerText 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>          <span style=color:#75715e># trim the path to only include the actual command - not the full path </span>
+</span></span><span style=display:flex><span>          <span style=color:#66d9ef>if</span> ($element.Name <span style=color:#f92672>-eq</span> <span style=color:#e6db74>&#39;Command&#39;</span>) { 
+</span></span><span style=display:flex><span>            $lastIndexOfSlash      = $directiveUserInputRaw.LastIndexOf(<span style=color:#e6db74>&#39;\&#39;</span>); 
+</span></span><span style=display:flex><span>            $directiveUserInputRaw = $directiveUserInputRaw.substring($lastIndexOfSlash+1); 
+</span></span><span style=display:flex><span>          } 
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>          $directiveUserInputFileNameCompatible = $directiveUserInputRaw <span style=color:#f92672>-replace</span> <span style=color:#e6db74>&#39;[\\|/\[\]&lt;&gt;\:&#34;\?\*%\.\s]&#39;</span>,<span style=color:#e6db74>&#39;_&#39;</span> 
+</span></span><span style=display:flex><span>          $directiveUserInputTrimmed            = $directiveUserInputFileNameCompatible.substring(0, <span style=color:#66d9ef>[System.Math]</span>::Min($maxLengthForInputTextPassedToOutput, $directiveUserInputFileNameCompatible.Length)) 
+</span></span><span style=display:flex><span>          $directiveSummaryString               = $flatFileNameTemplate <span style=color:#f92672>-f</span> $directiveType,$directiveUserInputTrimmed 
+</span></span><span style=display:flex><span>          $directiveOutputFolder                = Join-Path -Path $diagnosticArchiveTempUnzippedPath -ChildPath $directiveNumber 
+</span></span><span style=display:flex><span>          $directiveOutputFiles                 = Get-ChildItem -Path $directiveOutputFolder <span style=color:#f92672>-File</span> 
+</span></span><span style=display:flex><span>          <span style=color:#66d9ef>foreach</span>( $file <span style=color:#66d9ef>in</span> $directiveOutputFiles) { 
+</span></span><span style=display:flex><span>            $leafSummaryString = $directiveSummaryString,$file.Name -join <span style=color:#e6db74>&#39; &#39;</span> 
+</span></span><span style=display:flex><span>            $MainFolder = $(Join-Path $reformattedArchivePath $directiveSummaryString).Replace(<span style=color:#e6db74>&#34;-&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;_&#34;</span>,<span style=color:#e6db74>&#34; &#34;</span>).Replace(<span style=color:#e6db74>&#34;\ &#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;   \&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;  \&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34; \&#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>).Replace(<span style=color:#e6db74>&#34;   &#34;</span>,<span style=color:#e6db74>&#34; &#34;</span>).Replace(<span style=color:#e6db74>&#34;  &#34;</span>,<span style=color:#e6db74>&#34; &#34;</span>).TrimEnd().Replace(<span style=color:#e6db74>&#34; &#34;</span>,<span style=color:#e6db74>&#34;\&#34;</span>)
+</span></span><span style=display:flex><span>            <span style=color:#75715e>#if ($MainFolder[-1] = &#34; &#34;) {$MainFolder = $MainFolder.Substring(0,$MainFolder.Length - 2)}</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> (!(Test-Path $MainFolder)) { new-item -ItemType Directory -Path $MainFolder | Out-Null}
+</span></span><span style=display:flex><span>            Copy-Item $file.FullName -Destination (Join-Path -Path $MainFolder -ChildPath $file.Name) 
+</span></span><span style=display:flex><span>          } 
+</span></span><span style=display:flex><span>        } 
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#endregion  </span>
+</span></span><span style=display:flex><span>        Remove-Item -Path $diagnosticArchiveTempUnzippedPath -Force -Recurse 
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#Get-Item $reformattedArchivePath</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ul class=pa0></ul><div class="mt6 instapaper_ignoref"></div></div><aside class="w-30-l mt6-l"></aside></article></main><footer class="blue bottom-0 w-100 pa3" role=contentinfo><div class="flex justify-between"><a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href=https://thomassteendijk.github.io/thomassteendijk/>&copy; Thomas Steendijk Home 2022</a><div><div class=ananke-socials></div></div></div></footer></body></html>
