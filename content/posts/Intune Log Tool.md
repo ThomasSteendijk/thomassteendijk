@@ -6,11 +6,17 @@ summary: "Info about the logtool"
 ---
 ![Example image](/thomassteendijk/image/Pastedimage20220104160652.png)
 
-{{.TableOfContents}}
 
 # Intro
+Logs, logs are our lifeblood. 
+Would it not be nice to collect logs from endoints in a readable format? Well you can with intune!
+
 Intune can give a command to the client to collect log files and upload these to cloud
 These log files can then be downloaded from endpoint.microsoft.com and locally examined.
+
+Sounds to easy to be true? ofcourse it is but we can script around that issue. 
+
+but first things first:
 
 # Collecting log files
 In endpoint manager go to devices > all devices > find your device > collect diagnostics > "Yes"
@@ -19,7 +25,7 @@ In endpoint manager go to devices > all devices > find your device > collect dia
 
 
 # Downloading the logs
-after the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)
+After the logs are uploaded they wil be come available for download (this normally takes 5-20 min depending on the clients internet speed)
 
 ![Pasted image 20220104155558.png](/thomassteendijk/image/Pasted_image_20220104155558.png)
 

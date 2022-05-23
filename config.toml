@@ -1,7 +1,7 @@
-baseURL = 'https://thomassteendijk.github.io'
+baseURL = 'https://thomassteendijk.github.io/thomassteendijk/'
 languageCode = 'en-us'
 title = 'Thomas Steendijk Home'
-subtitle = "test"
+subtitle = "home"
 theme = "hugo-theme-learn" 
 
 [params]
